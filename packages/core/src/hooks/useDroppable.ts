@@ -1,4 +1,4 @@
-import {useCallback, useContext, useEffect, useRef} from 'react';
+import {useCallback, useContext, useEffect, useMemo, useRef} from 'react';
 import {
   useIsomorphicLayoutEffect,
   useLatestValue,
@@ -43,9 +43,8 @@ export function useDroppable({
   resizeObserverConfig,
 }: UseDroppableArguments) {
   const key = useUniqueId(ID_PREFIX);
-  const {active, dispatch, over, measureDroppableContainers} = useContext(
-    InternalContext
-  );
+  const {active, dispatch, over, measureDroppableContainers} =
+    useContext(InternalContext);
   const previous = useRef({disabled});
   const resizeObserverConnected = useRef(false);
   const rect = useRef<ClientRect | null>(null);
@@ -154,12 +153,13 @@ export function useDroppable({
     }
   }, [id, key, disabled, dispatch]);
 
+  const isOver = useMemo(() => over?.id === id, [id, over]);
+
   return {
     active,
     rect,
-    isOver: over?.id === id,
+    isOver,
     node: nodeRef,
-    over,
     setNodeRef,
   };
 }
